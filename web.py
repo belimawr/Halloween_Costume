@@ -81,7 +81,6 @@ class HTTPServer:
         request.path = split_line[1]
 
         self._parse_query_string(request)
-        self._parse_headers(request, cl_file)
         self._parse_body(request, cl_file)
 
         self._debug('***********************************')
@@ -93,26 +92,6 @@ class HTTPServer:
         self._debug('***********************************')
         self._debug('Waiting for another request...')
         return request
-
-    def _parse_headers(self, request, cl_file):
-        while True:
-            line = cl_file.readline()
-            line = line.decode('utf8')
-
-            # If line is a blank line, the headers ended
-            if line == '\r\n' or line == '\n':
-                break
-
-            # Actually parse the header line
-            # The format is:
-            # <header name>: <header value>
-            try:
-                split_line = line.split(':')
-                k = split_line[0].rstrip().lstrip()
-                v = split_line[1].rstrip().lstrip()
-                request.headers[k] = v
-            except Exception:
-                print('Error parsing "%s"' % line)
 
     def _parse_body(self, request, cl_file):
         if request.headers.get('Content-Length'):
