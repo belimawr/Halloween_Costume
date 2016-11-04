@@ -11,6 +11,7 @@ d6 = PWM(Pin(PINS['D6']))
 d7 = PWM(Pin(PINS['D7']))
 
 all_pins = [d1, d2, d3, d4, d5, d6, d7]
+pins_names = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7']
 
 def all_off():
     for pin in all_pins:
@@ -35,6 +36,7 @@ def blink(times=2):
         time.sleep(1)
 
 def fade_in(delay=0.1, step=10, pins=None):
+    all_off()
     if not pins:
         pins = pins_names
     for i in range(0, 1024, step):
@@ -59,6 +61,7 @@ def fade_out(delay=0.1, step=10, pins=None):
     all_off()
 
 def fade_blink(delay=0.1, step=10, pins=None):
+    all_off()
     if not pins:
         pins = pins_names
     for i in range(0, 1024, step):
