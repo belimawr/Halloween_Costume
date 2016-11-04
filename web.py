@@ -1,7 +1,5 @@
 import socket
-
-__version__ = '0.5'
-
+import halloween
 
 class Request:
     def __init__(self):
@@ -10,7 +8,6 @@ class Request:
         self.body = None
         self.headers = {}
         self.querystring = {}
-
 
 class HTTPServer:
     def __init__(self, address= '0.0.0.0', port=80, timeout=None, debug=False):
@@ -61,7 +58,8 @@ class HTTPServer:
         cl_file = cl.makefile('rwb')
         status = 200
         try:
-            self._parse_request(cl_file)
+            r = self._parse_request(cl_file)
+            handle_request(r)
         except Exception as e:
             status = 500
             print('Internal server error:', e)
@@ -94,6 +92,7 @@ class HTTPServer:
         self._debug(request.body)
         self._debug('***********************************')
         self._debug('Waiting for another request...')
+        return request
 
     def _parse_headers(self, request, cl_file):
         while True:
@@ -140,3 +139,65 @@ class HTTPServer:
     def _debug(self, *args, **kwargs):
         if self._DEBUG:
             print(*args, **kwargs)
+
+def handle_request(request):
+    pp = request.path
+    print('command:', pp)
+    repeat = request.querystring.get('repeat', '1')
+    repeat = int(repeat)
+    for _ in range(repeat):
+        if request.path == '/blink':
+            t = request.querystring.get('times', 2)
+            halloween.blink(times=int(t))
+
+        elif request.path == '/all_on':
+            delay = request.querystring.get('delay', '0')
+            delay = int(delay)
+            halloween.all_on(delay)
+
+        elif request.path == '/all_off':
+            halloween.all_off()
+
+        elif request.path == '/fade_in':
+            delay = request.querystring.get('delay', '0.01')
+            delay = float(delay)
+
+            step = request.querystring.get('step', '1')
+            step = int(step)
+
+            pins = request.querystring.get('pins', None)
+
+            halloween.fade_in(delay=delay, step=step, pins=pins)
+
+        elif request.path == '/fade_out':
+            delay = request.querystring.get('delay', '0.01')
+            delay = float(delay)
+
+            step = request.querystring.get('step', '1')
+            step = int(step)
+
+            pins = request.querystring.get('pins', None)
+
+            halloween.fade_out(delay=delay, step=step, pins=pins)
+
+        elif request.path == '/fade_blink':
+            delay = request.querystring.get('delay', '0.01')
+            delay = float(delay)
+
+            step = request.querystring.get('step', '1')
+            step = int(step)
+
+            pins = request.querystring.get('pins', None)
+
+            halloween.fade_blink(delay=delay, step=step, pins=pins)
+
+        elif request.path == '/fade_blink_one':
+            delay = request.querystring.get('delay', '0.01')
+            delay = float(delay)
+
+            step = request.querystring.get('step', '1')
+            step = int(step)
+
+            pins = request.querystring.get('pins', None)
+
+            halloween.fade_blink_one(delay=delay, step=step, pins=pins)
